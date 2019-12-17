@@ -6,10 +6,12 @@ var UserSchema = mongoose.Schema({
     },
     mobile: {
         type: Number,
-        required: true
+        required: true,
+        unique: true
     },
     email: {
-        type: String
+        type: String,
+        unique: true   
     },
     address: {
         type: String
@@ -18,7 +20,8 @@ var UserSchema = mongoose.Schema({
         type: String
     },
     adhaarNumber: {
-        type: Number
+        type: Number,
+        unique: true
     }
 });
 

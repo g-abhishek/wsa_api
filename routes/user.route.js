@@ -4,6 +4,7 @@ var router = express.Router();
 
 router.post('/user', userController.signUpUser);
 router.get('/user', userController.login);
+router.get('/user/mail', userController.forgetPassword);
 
 
 module.exports = router;

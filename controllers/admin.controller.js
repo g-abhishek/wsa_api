@@ -3,19 +3,75 @@ var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 
 exports.adminLogin = function (req, res) {
-    if (req.body.username === "admin" && req.body.password === "admin") {
-        var userSchema = {
-            username: req.body.username,
-            password: req.body.password
+    var username = req.body.username;
+    var password = req.body.password;
+    if (username && password) {
+        if (username == "admin" && password == "admin") {
+            var userSchema = {
+                username: username,
+                password: password
+            }
+            var token = jwt.sign(JSON.stringify(userSchema), 'WSA_SECRET_KEY');
+            return res.send({
+                message: 'admin login successfull',
+                responseCode: 200,
+                status: 200,
+                token: token,
+                admin: userSchema
+            })
+        } else {
+            var usernameSchema = {
+                email: "abc@gmail.com"
+            }
+            Volunteer.findOne(usernameSchema, function(err, volunteer){
+                if(err){
+                    return res.send({
+                        message: 'err while finding username',
+                        responseCode: 700,
+                        status: 200,
+                        error: err
+                    })
+                }
+                if (volunteer == null) {
+                    return res.send({
+                        message: 'No user found',
+                        responseCode: 500,
+                        status: 200,
+                        volunteer: volunteer
+                    })
+                } else {
+                    bcrypt.compare(password, volunteer.password, function (err, result) {
+                        // res === true
+                        if (err) {
+                            return res.send({
+                                message: 'err while password matching',
+                                responseCode: 800,
+                                status: 200,
+                                err: err
+                            })
+                        } else {
+                            if (result === true) {
+                                console.log('matched');
+                                var token = jwt.sign(JSON.stringify(volunteer), 'WSA_SECRET_KEY');
+                                return res.send({
+                                    message: 'login successfull',
+                                    responseCode: 200,
+                                    status: 200,
+                                    token: token,
+                                    volunteer: volunteer
+                                })
+                            } else {
+                                return res.send({
+                                    message: 'password did not matched',
+                                    responseCode: 300,
+                                    status: 200
+                                })
+                            }
+                        }
+                    });
+                }
+            })
         }
-        var token = jwt.sign(JSON.stringify(userSchema), 'WSA_SECRET_KEY');
-        return res.send({
-            message: 'admin login successfull',
-            responseCode: 200,
-            status: 200,
-            token: token,
-            admin: userSchema
-        })
     } else {
         return res.send({
             message: 'all fields are required',

@@ -1,6 +1,7 @@
 var User = require('../models/user.model');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
+var sendmail = require('sendmail')();
 
 exports.signUpUser = function (req, res) {
     if ( req.body.fullname && req.body.mobile && req.body.email && req.body.address && req.body.password && req.body.adhaarNumber) {
@@ -99,6 +100,52 @@ exports.login = function (req, res) {
         return res.send({
             message: 'all fields are required',
             responseCode: 100
+        })
+    }
+}
+
+exports.forgetPassword = function(req, res){
+    if(req.body.email){
+        console.log(req.body.email)
+        var mailSchema = {
+            from : 'ag528927@gmail.com',
+            to : req.body.email,
+            subject: 'your otp is 0987',
+            html: 'Mail of test sendmail ',
+        }
+
+        sendmail({
+            from: 'ag528927@gmail.com',
+            to: 'ag528927@gmail.com',
+            subject: 'test sendmail',
+            html: 'Mail of test sendmail ',
+          }, function(err, reply) {
+            console.log(err && err.stack);
+            console.dir(reply);
+        });
+        
+        // sendmail({mailSchema}, function(err, result){
+        //     if(err){
+        //         return res.send({
+        //             message: 'err while sending mail',
+        //             responseCode: 700,
+        //             status: 200,
+        //             error: err
+        //         })
+        //     }else{
+        //         return res.send({
+        //             message: 'mail send',
+        //             responseCode: 200,
+        //             status: 200,
+        //             result: result
+        //         })
+        //     }
+        // })
+    }else{
+        return res.send({
+            message: 'mail required',
+            responseCode: 100,
+            status: 200
         })
     }
 }
